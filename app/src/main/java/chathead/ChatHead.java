@@ -111,6 +111,9 @@ public class ChatHead implements ChatHeadManager.ClickChatHeadListener{
         chatHeadContainer.setVisibility(visibility);
     }
 
+    public void close(){
+        chatHeadManager.removeAllChatHeads();
+    }
     public Drawable getChatHeadDrawable(User user) {
         ChatHeadDrawable chatHeadDrawable = new ChatHeadDrawable();
 
