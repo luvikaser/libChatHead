@@ -20,12 +20,9 @@ import chathead.ChatHeadUI.PopupFragment.ChatHeadViewAdapter;
 import chathead.ChatHeadUI.PopupFragment.UpArrowLayout;
 import chathead.User;
 import chathead.Utils.ChatHeadConfig;
-import chathead.Utils.ChatHeadOverlayView;
 
 public interface ChatHeadManagerListener {
         List<ChatHead> getChatHeads();
-
-        void setViewAdapter(ChatHeadViewAdapter chatHeadViewAdapter);
 
         ChatHeadCloseButton getCloseButton();
 
@@ -43,15 +40,9 @@ public interface ChatHeadManagerListener {
 
         boolean removeChatHead(User user);
 
-        ChatHeadOverlayView getOverlayView();
+        void setViewAdapter(ChatHeadViewAdapter chatHeadViewAdapter);
 
         void setArrangement(Class<? extends ChatHeadArrangement> arrangement, Bundle extras);
-
-        View attachView(ChatHead activeChatHead, ViewGroup parent);
-
-        void detachView(ChatHead chatHead, ViewGroup parent);
-
-        void removeView(ChatHead chatHead, ViewGroup parent);
 
         ChatHeadConfig getConfig();
 
@@ -59,15 +50,10 @@ public interface ChatHeadManagerListener {
 
         double getDistanceCloseButtonFromHead(float rawX, float rawY);
 
-        void hideOverlayView(boolean animated);
-
-        void showOverlayView(boolean animated);
 
         int[] getChatHeadCoordsForCloseButton(ChatHead chatHead);
 
         void bringToFront(ChatHead chatHead);
-
-        UpArrowLayout getArrowLayout();
 
         ChatHeadContainer getChatHeadContainer();
 
@@ -81,5 +67,12 @@ public interface ChatHeadManagerListener {
 
         void onSizeChanged(int w, int h, int oldw, int oldh);
 
+        View attachView(ChatHead activeChatHead, ViewGroup parent);
 
-        }
+        void detachView(ChatHead chatHead, ViewGroup parent);
+
+        void removeView(ChatHead chatHead, ViewGroup parent);
+
+        UpArrowLayout getArrowLayout();
+
+}

@@ -14,10 +14,9 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringListener;
 import com.facebook.rebound.SpringSystem;
 
-import java.io.Serializable;
-
+import chathead.ChatHeadArrangement.MaximizedArrangement;
+import chathead.ChatHeadArrangement.MinimizedArrangement;
 import chathead.ChatHeadManager.ChatHeadManager;
-import chathead.ChatHeadManager.ChatHeadManagerListener;
 import chathead.User;
 import chathead.Utils.ChatHeadUtils;
 import chathead.Utils.SpringConfigsHolder;
@@ -46,28 +45,25 @@ public class ChatHead extends ImageView implements SpringListener {
     private Spring xPositionSpring;
     private Spring yPositionSpring;
     private boolean isHero;
-    public ChatHead(Context context) {
-        super(context);
-        throw new IllegalArgumentException("This constructor cannot be used");
-    }
-
-    public ChatHead(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        throw new IllegalArgumentException("This constructor cannot be used");
-    }
-
-    public ChatHead(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        throw new IllegalArgumentException("This constructor cannot be used");
-    }
+//    public ChatHead(Context context) {
+//        super(context);
+//        throw new IllegalArgumentException("This constructor cannot be used");
+//    }
+//
+//    public ChatHead(Context context, AttributeSet attrs) {
+//        super(context, attrs);
+//        throw new IllegalArgumentException("This constructor cannot be used");
+//    }
+//
+//    public ChatHead(Context context, AttributeSet attrs, int defStyleAttr) {
+//        super(context, attrs, defStyleAttr);
+//        throw new IllegalArgumentException("This constructor cannot be used");
+//    }
 
     public ChatHead(ChatHeadManager manager, SpringSystem springsHolder, Context context) {
         super(context);
         this.manager = manager;
         this.springSystem = springsHolder;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
-        }
         init();
     }
 
@@ -182,6 +178,7 @@ public class ChatHead extends ImageView implements SpringListener {
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
+
         if(xPositionSpring == null || yPositionSpring == null) return false;
         //Chathead view will set the correct active springs on touch
         Spring activeHorizontalSpring = xPositionSpring;
@@ -238,17 +235,19 @@ public class ChatHead extends ImageView implements SpringListener {
                         manager.getCloseButton().onRelease();
                     }
 
-                    velocityTracker.computeCurrentVelocity(1000);
                 }
 
             }
 
         } else {
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-
-                manager.listener.onClick(getUser());
+                if (velocityTracker == null) {
+                    velocityTracker = VelocityTracker.obtain();
+                }
+                velocityTracker.computeCurrentVelocity(1000);
 
                 boolean wasDragging = isDragging;
+
                 activeHorizontalSpring.setSpringConfig(SpringConfigsHolder.DRAGGING);
                 activeHorizontalSpring.setSpringConfig(SpringConfigsHolder.DRAGGING);
                 isDragging = false;

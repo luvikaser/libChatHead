@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import nhutlm2.fresher.demochathead.R;
 
 /**
- * Created by luvikaser on 07/03/2017.
+ * Created by cpu1-216-local on 25/05/2017.
  */
 
 public class UpArrowLayout extends ViewGroup {

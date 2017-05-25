@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.Serializable;
 
 import chathead.ChatHeadUI.ChatHead;
 
@@ -19,7 +18,5 @@ public interface ChatHeadViewAdapter<User> {
     void detachView(User user, ChatHead chatHead, ViewGroup parent);
 
     void removeView(User user, ChatHead chatHead, ViewGroup parent);
-
-    Drawable getChatHeadDrawable(User user);
 
 }

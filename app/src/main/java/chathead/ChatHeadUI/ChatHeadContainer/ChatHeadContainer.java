@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +16,7 @@ import chathead.ChatHeadArrangement.MaximizedArrangement;
 import chathead.ChatHeadArrangement.MinimizedArrangement;
 import chathead.ChatHeadManager.ChatHeadManager;
 import chathead.ChatHeadUI.ChatHead;
+import chathead.Utils.ChatHeadUtils;
 
 import static android.content.Context.WINDOW_SERVICE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -34,7 +36,7 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
 
     private WindowManager windowManager;
     private ChatHeadArrangement currentArrangement;
-    private boolean motionCaptureViewAdded;
+    private boolean motionCaptureViewAdded = false;
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

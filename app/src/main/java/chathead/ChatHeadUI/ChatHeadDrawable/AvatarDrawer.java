@@ -14,16 +14,13 @@ import android.graphics.Shader;
 import android.widget.ImageView;
 
 public class AvatarDrawer {
-    private static final float SHADOW_RADIUS = 4f;
-    private static final float SHADOW_DX = 0f;
-    private static final float SHADOW_DY = 4f;
-    private static final int SHADOW_COLOR = Color.BLACK;
+
 
     private Bitmap bitmap;
     private Shader bitmapShader;
     private RectF mRect;
     private Paint mPaint;
-    private ImageView.ScaleType scaleType = ImageView.ScaleType.FIT_CENTER;
+    private ImageView.ScaleType scaleType = ImageView.ScaleType.CENTER_CROP;
 
     public AvatarDrawer(Bitmap bitmap, Shader shader){
         this.bitmap = bitmap;
@@ -35,13 +32,11 @@ public class AvatarDrawer {
     }
     public void drawAvatar(Canvas canvas){
         mPaint.setShader(bitmapShader);
-        mPaint.setShadowLayer(SHADOW_RADIUS, SHADOW_DX, SHADOW_DY, SHADOW_COLOR);
-        canvas.drawCircle(mRect.centerX(), mRect.centerY(), mRect.width() / 2 - SHADOW_DY, mPaint);
+        canvas.drawCircle(mRect.centerX(), mRect.centerY(), mRect.width() / 2, mPaint);
     }
     protected void onBoundsChange(Rect bounds) {
         mRect.set(bounds.left, bounds.top, bounds.right, bounds.bottom);
         bitmapShader.setLocalMatrix(getLocalMatrix());
-
     }
     private Matrix getLocalMatrix() {
         float scale;

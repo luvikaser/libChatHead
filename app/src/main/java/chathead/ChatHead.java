@@ -1,27 +1,17 @@
 package chathead;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Color;
-import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import chathead.ChatHeadArrangement.MinimizedArrangement;
 import chathead.ChatHeadManager.ChatHeadManager;
 import chathead.ChatHeadUI.ChatHeadContainer.ChatHeadContainer;
-import chathead.ChatHeadUI.ChatHeadDrawable.AvatarDrawer;
-import chathead.ChatHeadUI.ChatHeadDrawable.ChatHeadDrawable;
-import chathead.ChatHeadUI.ChatHeadDrawable.NotificationDrawer;
 import chathead.ChatHeadUI.PopupFragment.ChatHeadViewAdapter;
 import nhutlm2.fresher.demochathead.R;
 
@@ -32,24 +22,19 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
  * Created by cpu1-216-local on 12/05/2017.
  */
 
-public class ChatHead implements ChatHeadManager.ClickChatHeadListener{
+public class ChatHead{
     private ChatHeadManager chatHeadManager = null;
     private ChatHeadContainer chatHeadContainer;
-    private Map<User, View> viewCache = new HashMap<>();
     private Context context;
-    public interface ClickChatHeadListener{
-        void onClick(User user);
-    }
-    private ClickChatHeadListener listener;
+    private Map<User, View> viewCache = new HashMap<>();
 
-    public ChatHead(Context context, ClickChatHeadListener listener){
+    public ChatHead(Context context){
         this.context = context;
-        this.listener = listener;
     }
 
     public void start(){
         chatHeadContainer = new ChatHeadContainer(context);
-        chatHeadManager = new ChatHeadManager(context, chatHeadContainer, this);
+        chatHeadManager = new ChatHeadManager(context, chatHeadContainer);
         chatHeadManager.setViewAdapter(new ChatHeadViewAdapter<User>() {
 
             @Override
@@ -93,19 +78,14 @@ public class ChatHead implements ChatHeadManager.ClickChatHeadListener{
                 }
             }
 
-            @Override
-            public Drawable getChatHeadDrawable(User user) {
-                return ChatHead.this.getChatHeadDrawable(user);
-            }
         });
 
         chatHeadManager.setArrangement(MinimizedArrangement.class, null);
     }
 
     public void push(User user) {
-        chatHeadManager.removeAllChatHeads();
         chatHeadManager.addChatHead(user);
-       // chatHeadManager.bringToFront(chatHeadManager.findChatHeadByKey(user));
+        chatHeadManager.bringToFront(chatHeadManager.findChatHeadByKey(user));
     }
     public void setVisibility(int visibility) {
         chatHeadContainer.setVisibility(visibility);
@@ -113,17 +93,7 @@ public class ChatHead implements ChatHeadManager.ClickChatHeadListener{
 
     public void close(){
         chatHeadManager.removeAllChatHeads();
-    }
-    public Drawable getChatHeadDrawable(User user) {
-        ChatHeadDrawable chatHeadDrawable = new ChatHeadDrawable();
-
-        chatHeadDrawable.setAvatarDrawer(new AvatarDrawer(user.avatar, new BitmapShader(user.avatar, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)));
-        chatHeadDrawable.setNotificationDrawer(new NotificationDrawer().setNotificationText(String.valueOf(user.countMessage)).setNotificationAngle(135).setNotificationColor(Color.WHITE, Color.RED));
-        return chatHeadDrawable;
+        chatHeadManager = null;
     }
 
-    @Override
-    public void onClick(User user) {
-        listener.onClick(user);
-    }
 }

@@ -10,8 +10,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
 public class ChatHeadDrawable extends Drawable {
-    private AvatarDrawer avatarDrawer;
-    private NotificationDrawer notificationDrawer;
+    private AvatarDrawer avatarDrawer = null;
+    private NotificationDrawer notificationDrawer = null;
 
     private long id;
     private Object tag;

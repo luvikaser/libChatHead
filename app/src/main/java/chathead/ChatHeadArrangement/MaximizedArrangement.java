@@ -7,15 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.rebound.Spring;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import chathead.ChatHeadManager.ChatHeadManager;
 import chathead.ChatHeadUI.ChatHead;
 import chathead.ChatHeadUI.PopupFragment.UpArrowLayout;
-import chathead.User;
 import chathead.Utils.ChatHeadConfig;
 import chathead.Utils.ChatHeadUtils;
 import chathead.Utils.SpringConfigsHolder;
@@ -30,13 +27,13 @@ public class MaximizedArrangement extends ChatHeadArrangement {
     private static int MIN_VELOCITY_TO_POSITION_BACK;
     private final Map<ChatHead, Point> positions = new ArrayMap<>();
     private ChatHeadManager manager;
+    private UpArrowLayout arrowLayout;
     private int maxWidth;
     private int maxHeight;
     private ChatHead currentChatHead = null;
-    private UpArrowLayout arrowLayout;
-    private int maxDistanceFromOriginal;
     private int topPadding;
     private Bundle extras;
+    private int maxDistanceFromOriginal;
 
 
     public MaximizedArrangement(ChatHeadManager manager) {
@@ -53,7 +50,8 @@ public class MaximizedArrangement extends ChatHeadArrangement {
         MIN_VELOCITY_TO_POSITION_BACK = ChatHeadUtils.dpToPx(container.getDisplayMetrics(), 50);
         MAX_DISTANCE_FROM_ORIGINAL = ChatHeadUtils.dpToPx(container.getContext(), 10);
 
-        List<ChatHead> chatHeads = container.getChatHeads();
+        List<ChatHead> chatHeads = manager.getChatHeads();
+
         int heroIndex = 0;
         if (extras != null)
             heroIndex = extras.getInt(BUNDLE_HERO_INDEX_KEY, -1);
@@ -87,7 +85,7 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
 
             }
-            container.showOverlayView(true);
+            android.util.Log.e("test", currentChatHead.getUser().id+"");
             selectChatHead(currentChatHead);
         }
     }
@@ -99,11 +97,15 @@ public class MaximizedArrangement extends ChatHeadArrangement {
             manager.detachView(currentChatHead, getArrowLayout());
         }
         hideView();
-        manager.hideOverlayView(true);
         positions.clear();
     }
 
-
+    private UpArrowLayout getArrowLayout() {
+        if (arrowLayout == null) {
+            arrowLayout = manager.getArrowLayout();
+        }
+        return arrowLayout;
+    }
     @Override
     public boolean handleTouchUp(ChatHead activeChatHead, int xVelocity, int yVelocity, Spring activeHorizontalSpring, Spring activeVerticalSpring, boolean wasDragging) {
 
@@ -117,7 +119,6 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
         activeHorizontalSpring.setVelocity(xVelocity);
         activeVerticalSpring.setVelocity(yVelocity);
-
 
         if (wasDragging) {
             return true;
@@ -139,6 +140,23 @@ public class MaximizedArrangement extends ChatHeadArrangement {
         }
         pointTo(activeChatHead);
         showOrHideView(activeChatHead);
+    }
+
+    private void pointTo(ChatHead activeChatHead) {
+        UpArrowLayout arrowLayout = getArrowLayout();
+        arrowLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deactivate();
+            }
+        });
+        getArrowLayout().removeAllViews();
+        manager.attachView(activeChatHead, arrowLayout);
+        Point point = positions.get(activeChatHead);
+        if (point != null) {
+            int padding = manager.getConfig().getHeadVerticalSpacing();
+            arrowLayout.pointTo(point.x + manager.getConfig().getHeadWidth() / 2, point.y + manager.getConfig().getHeadHeight() + padding);
+        }
     }
 
     private void positionToOriginal(ChatHead activeChatHead, Spring activeHorizontalSpring, Spring activeVerticalSpring) {
@@ -234,51 +252,12 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
     }
 
-    private UpArrowLayout getArrowLayout() {
-        if (arrowLayout == null) {
-            arrowLayout = manager.getArrowLayout();
-        }
-        return arrowLayout;
-    }
-
-    private void hideView() {
-        UpArrowLayout arrowLayout = getArrowLayout();
-        arrowLayout.setVisibility(View.GONE);
-
-    }
-
     private void showView(double dx, double dy, double distanceFromOriginal) {
         UpArrowLayout arrowLayout = getArrowLayout();
         arrowLayout.setVisibility(View.VISIBLE);
         arrowLayout.setTranslationX((float) dx);
         arrowLayout.setTranslationY((float) dy);
         arrowLayout.setAlpha(1f - ((float) distanceFromOriginal / (float) maxDistanceFromOriginal));
-    }
-
-    public static void sendViewToBack(final View child) {
-        final ViewGroup parent = (ViewGroup) child.getParent();
-        if (null != parent && parent.indexOfChild(child) != 0) {
-            parent.removeView(child);
-            parent.addView(child, 0);
-        }
-    }
-
-    private void pointTo(ChatHead activeChatHead) {
-        UpArrowLayout arrowLayout = getArrowLayout();
-        arrowLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deactivate();
-            }
-        });
-        getArrowLayout().removeAllViews();
-        manager.attachView(activeChatHead, arrowLayout);
-        sendViewToBack(manager.getOverlayView());
-        Point point = positions.get(activeChatHead);
-        if (point != null) {
-            int padding = manager.getConfig().getHeadVerticalSpacing();
-            arrowLayout.pointTo(point.x + manager.getConfig().getHeadWidth() / 2, point.y + manager.getConfig().getHeadHeight() + padding);
-        }
     }
 
     @Override
@@ -295,7 +274,6 @@ public class MaximizedArrangement extends ChatHeadArrangement {
     @Override
     public void onChatHeadRemoved(ChatHead removed) {
         manager.detachView(removed, getArrowLayout());
-        manager.removeView(removed, getArrowLayout());
         positions.remove(removed);
         boolean isEmpty = false;
 
@@ -326,7 +304,6 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
     private void deactivate() {
         manager.setArrangement(MinimizedArrangement.class, getBundleWithHero());
-        hideView();
     }
 
     @Override
@@ -383,5 +360,9 @@ public class MaximizedArrangement extends ChatHeadArrangement {
         selectChatHead(chatHead);
     }
 
+    private void hideView() {
+        UpArrowLayout arrowLayout = getArrowLayout();
+        arrowLayout.setVisibility(View.GONE);
+    }
 
 }

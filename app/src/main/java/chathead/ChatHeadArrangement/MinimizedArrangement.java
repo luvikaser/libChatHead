@@ -192,8 +192,6 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
 
     @Override
     public void onChatHeadRemoved(ChatHead removed) {
-        manager.detachView(removed, manager.getArrowLayout());
-        manager.removeView(removed, manager.getArrowLayout());
         if (removed == hero) {
             hero = null;
         }
@@ -252,11 +250,11 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
 
         settleToClosest(activeChatHead, xVelocity, yVelocity);
 
-//        if (!wasDragging) {
-//            deactivate();
-//            return false;
-//
-//        }
+        if (!wasDragging) {
+            deactivate();
+            return false;
+
+        }
         return true;
     }
 
@@ -427,10 +425,25 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
 
 
     }
+    private Bundle getBundle(int heroIndex) {
+        if(hero!=null) {
+            relativeXPosition = hero.getHorizontalSpring().getCurrentValue() * 1.0 / maxWidth;
+            relativeYPosition = hero.getVerticalSpring().getCurrentValue() * 1.0 / maxHeight;
+        }
 
+        Bundle bundle = extras;
+        if (bundle == null) {
+            bundle = new Bundle();
+        }
+        bundle.putInt(MaximizedArrangement.BUNDLE_HERO_INDEX_KEY, heroIndex);
+        bundle.putDouble(MinimizedArrangement.BUNDLE_HERO_RELATIVE_X_KEY, relativeXPosition);
+        bundle.putDouble(MinimizedArrangement.BUNDLE_HERO_RELATIVE_Y_KEY, relativeYPosition);
+        return bundle;
+    }
     @Override
     public void bringToFront(ChatHead chatHead) {
-        onActivate(manager, getBundleWithHero(), manager.getMaxWidth(), manager.getMaxHeight());
+        Bundle b = getBundle(getHeroIndex(chatHead));
+        onActivate(manager, b, manager.getMaxWidth(), manager.getMaxHeight());
     }
 
 }

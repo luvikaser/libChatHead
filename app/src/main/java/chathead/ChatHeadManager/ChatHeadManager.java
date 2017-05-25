@@ -1,8 +1,12 @@
 package chathead.ChatHeadManager;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Color;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -14,7 +18,6 @@ import android.widget.ImageView;
 import com.facebook.rebound.SpringConfigRegistry;
 import com.facebook.rebound.SpringSystem;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,21 +30,24 @@ import chathead.ChatHeadArrangement.MinimizedArrangement;
 import chathead.ChatHeadUI.ChatHead;
 import chathead.ChatHeadUI.ChatHeadCloseButton;
 import chathead.ChatHeadUI.ChatHeadContainer.ChatHeadContainer;
+import chathead.ChatHeadUI.ChatHeadDrawable.AvatarDrawer;
+import chathead.ChatHeadUI.ChatHeadDrawable.ChatHeadDrawable;
+import chathead.ChatHeadUI.ChatHeadDrawable.NotificationDrawer;
 import chathead.ChatHeadUI.PopupFragment.ChatHeadViewAdapter;
 import chathead.ChatHeadUI.PopupFragment.UpArrowLayout;
 import chathead.User;
 import chathead.Utils.ChatHeadConfig;
 import chathead.Utils.ChatHeadDefaultConfig;
-import chathead.Utils.ChatHeadOverlayView;
 import chathead.Utils.SpringConfigsHolder;
 import nhutlm2.fresher.demochathead.R;
+
+import static android.view.View.GONE;
 
 /**
  * Created by luvikaser on 07/03/2017.
  */
 
 public class ChatHeadManager implements ChatHeadManagerListener {
-    private static final int OVERLAY_TRANSITION_DURATION = 200;
     private final Map<Class<? extends ChatHeadArrangement>, ChatHeadArrangement> arrangements = new HashMap<>(3);
     private final Context context;
     private final ChatHeadContainer chatHeadContainer;
@@ -50,21 +56,16 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     private int maxHeight;
     private ChatHeadCloseButton closeButton;
     private ChatHeadArrangement activeArrangement;
-    private ChatHeadViewAdapter viewAdapter;
-    private ChatHeadOverlayView overlayView;
-    private boolean overlayVisible;
-    private ImageView closeButtonShadow;
     private SpringSystem springSystem;
     private ChatHeadConfig config;
     private ArrangementChangeRequest requestedArrangement;
     private DisplayMetrics displayMetrics;
     private UpArrowLayout arrowLayout;
-    public ClickChatHeadListener listener;
-    public ChatHeadManager(Context context, ChatHeadContainer chatHeadContainer, ClickChatHeadListener listener) {
+    private ChatHeadViewAdapter viewAdapter;
+    public ChatHeadManager(Context context, ChatHeadContainer chatHeadContainer) {
         this.context = context;
         this.chatHeadContainer = chatHeadContainer;
         this.displayMetrics = chatHeadContainer.getDisplayMetrics();
-        this.listener = listener;
         init(context, new ChatHeadDefaultConfig(context));
     }
 
@@ -82,10 +83,6 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         return chatHeads;
     }
 
-    @Override
-    public void setViewAdapter(ChatHeadViewAdapter chatHeadViewAdapter) {
-        this.viewAdapter = chatHeadViewAdapter;
-    }
 
     @Override
     public ChatHeadCloseButton getCloseButton() {
@@ -150,8 +147,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
     @Override
     public ChatHead addChatHead(User user) {
-        android.util.Log.d("abc","add");
-        ChatHead chatHead = null;
+        ChatHead chatHead = findChatHeadByKey(user);
         if (chatHead == null) {
             chatHead = new ChatHead(this, springSystem, getContext());
             chatHead.setUser(user);
@@ -166,15 +162,14 @@ public class ChatHeadManager implements ChatHeadManagerListener {
                     removeChatHead(chatHeads.get(0).getUser());
                 }
             }
-            reloadDrawable(user);
             if (activeArrangement != null)
                 activeArrangement.onChatHeadAdded(chatHead);
             else {
                 chatHead.getHorizontalSpring().setCurrentValue(-100);
                 chatHead.getVerticalSpring().setCurrentValue(-100);
             }
-            closeButtonShadow.bringToFront();
         }
+        reloadDrawable(user);
         return chatHead;
     }
 
@@ -188,12 +183,19 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         return null;
     }
 
+    private Drawable getChatHeadDrawable(User user) {
+        ChatHeadDrawable chatHeadDrawable = new ChatHeadDrawable();
+
+        chatHeadDrawable.setAvatarDrawer(new AvatarDrawer(user.avatar, new BitmapShader(user.avatar, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)));
+        if (user.countMessage != 0)
+            chatHeadDrawable.setNotificationDrawer(new NotificationDrawer().setNotificationText(String.valueOf(user.countMessage)).setNotificationAngle(135).setNotificationColor(Color.WHITE, Color.RED));
+        return chatHeadDrawable;
+
+    }
     @Override
     public void reloadDrawable(User user) {
-        Drawable chatHeadDrawable = viewAdapter.getChatHeadDrawable(user);
-        if (chatHeadDrawable != null) {
-            findChatHeadByKey(user).setImageDrawable(viewAdapter.getChatHeadDrawable(user));
-         //   findChatHeadByKey(key).addShadow();
+        if (findChatHeadByKey(user) != null) {
+            findChatHeadByKey(user).setImageDrawable(getChatHeadDrawable(user));
         }
     }
 
@@ -227,10 +229,6 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         }
     }
 
-    @Override
-    public ChatHeadOverlayView getOverlayView() {
-        return overlayView;
-    }
 
     private void init(Context context, ChatHeadConfig chatHeadDefaultConfig) {
         chatHeadContainer.onInitialized(this);
@@ -240,34 +238,24 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         this.displayMetrics = metrics;
         this.config = chatHeadDefaultConfig; //TODO : needs cleanup
         chatHeads = new ArrayList<>(5);
+
         arrowLayout = new UpArrowLayout(context);
         arrowLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         chatHeadContainer.addView(arrowLayout, arrowLayout.getLayoutParams());
         arrowLayout.setVisibility(View.GONE);
-        springSystem = SpringSystem.create();
+
         closeButton = new ChatHeadCloseButton(context, this);
         ViewGroup.LayoutParams layoutParams = chatHeadContainer.createLayoutParams(chatHeadDefaultConfig.getCloseButtonHeight(), chatHeadDefaultConfig.getCloseButtonWidth(), Gravity.TOP | Gravity.START, 0);
         chatHeadContainer.addView(closeButton, layoutParams);
-        closeButtonShadow = new ImageView(getContext());
-        ViewGroup.LayoutParams shadowLayoutParams = chatHeadContainer.createLayoutParams(metrics.heightPixels / 8, metrics.widthPixels, Gravity.BOTTOM, 0);
-        closeButtonShadow.setImageResource(R.drawable.dismiss_shadow);
-        closeButtonShadow.setVisibility(View.GONE);
-        chatHeadContainer.addView(closeButtonShadow, shadowLayoutParams);
-
         arrangements.put(MinimizedArrangement.class, new MinimizedArrangement(this));
         arrangements.put(MaximizedArrangement.class, new MaximizedArrangement(this));
-        setupOverlay(context);
         setConfig(chatHeadDefaultConfig);
+
+        springSystem = SpringSystem.create();
         SpringConfigRegistry.getInstance().addSpringConfig(SpringConfigsHolder.DRAGGING, "dragging mode");
         SpringConfigRegistry.getInstance().addSpringConfig(SpringConfigsHolder.NOT_DRAGGING, "not dragging mode");
     }
 
-    private void setupOverlay(Context context) {
-        overlayView = new ChatHeadOverlayView(context);
-        overlayView.setBackgroundResource(R.drawable.overlay_transition);
-        ViewGroup.LayoutParams layoutParams = getChatHeadContainer().createLayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, Gravity.NO_GRAVITY, 0);
-        getChatHeadContainer().addView(overlayView, layoutParams);
-    }
 
     public double getDistanceCloseButtonFromHead(float touchX, float touchY) {
         if (closeButton.isDisappeared()) {
@@ -280,11 +268,6 @@ public class ChatHeadManager implements ChatHeadManagerListener {
             double distance = Math.hypot(xDiff, yDiff);
             return distance;
         }
-    }
-
-    @Override
-    public UpArrowLayout getArrowLayout() {
-        return arrowLayout;
     }
 
     @Override
@@ -321,54 +304,13 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     }
 
     @Override
-    public void hideOverlayView(boolean animated) {
-        if (overlayVisible) {
-            TransitionDrawable drawable = (TransitionDrawable) overlayView.getBackground();
-            int duration = OVERLAY_TRANSITION_DURATION;
-            if (!animated) duration = 0;
-            drawable.reverseTransition(duration);
-            overlayView.setClickable(false);
-            overlayVisible = false;
-        }
+    public UpArrowLayout getArrowLayout() {
+        return arrowLayout;
     }
 
     @Override
-    public void showOverlayView(boolean animated) {
-        if (!overlayVisible) {
-            TransitionDrawable drawable = (TransitionDrawable) overlayView.getBackground();
-            int duration = OVERLAY_TRANSITION_DURATION;
-            if (!animated) duration = 0;
-            drawable.startTransition(duration);
-            overlayView.setClickable(true);
-            overlayVisible = true;
-        }
-    }
-
-    @Override
-    public int[] getChatHeadCoordsForCloseButton(ChatHead chatHead) {
-        int[] coords = new int[2];
-        int x = (int) (closeButton.getLeft() + closeButton.getEndValueX() + closeButton.getMeasuredWidth() / 2 - chatHead.getMeasuredWidth() / 2);
-        int y = (int) (closeButton.getTop() + closeButton.getEndValueY() + closeButton.getMeasuredHeight() / 2 - chatHead.getMeasuredHeight() / 2);
-        coords[0] = x;
-        coords[1] = y;
-        return coords;
-    }
-
-    @Override
-    public void bringToFront(ChatHead chatHead) {
-        if (activeArrangement != null) {
-            activeArrangement.bringToFront(chatHead);
-        }
-    }
-
-    public void onCloseButtonAppear() {
-        if (!getConfig().isCloseButtonHidden()) {
-            closeButtonShadow.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void onCloseButtonDisappear() {
-        closeButtonShadow.setVisibility(View.GONE);
+    public void setViewAdapter(ChatHeadViewAdapter chatHeadViewAdapter) {
+        this.viewAdapter = chatHeadViewAdapter;
     }
 
     @Override
@@ -387,6 +329,25 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         viewAdapter.detachView(chatHead.getUser(), chatHead, parent);
     }
 
+
+    @Override
+    public int[] getChatHeadCoordsForCloseButton(ChatHead chatHead) {
+        int[] coords = new int[2];
+        int x = (int) (closeButton.getLeft() + closeButton.getEndValueX() + closeButton.getMeasuredWidth() / 2 - chatHead.getMeasuredWidth() / 2);
+        int y = (int) (closeButton.getTop() + closeButton.getEndValueY() + closeButton.getMeasuredHeight() / 2 - chatHead.getMeasuredHeight() / 2);
+        coords[0] = x;
+        coords[1] = y;
+        return coords;
+    }
+
+    @Override
+    public void bringToFront(ChatHead chatHead) {
+        if (activeArrangement != null) {
+            activeArrangement.bringToFront(chatHead);
+        }
+    }
+
+
     @Override
     public ChatHeadConfig getConfig() {
         return config;
@@ -397,11 +358,9 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         this.config = config;
         if (closeButton != null) {
             if (config.isCloseButtonHidden()) {
-                closeButton.setVisibility(View.GONE);
-                closeButtonShadow.setVisibility(View.GONE);
+                closeButton.setVisibility(GONE);
             } else {
                 closeButton.setVisibility(View.VISIBLE);
-                closeButtonShadow.setVisibility(View.VISIBLE);
             }
         }
         for (Map.Entry<Class<? extends ChatHeadArrangement>, ChatHeadArrangement> arrangementEntry : arrangements.entrySet()) {
@@ -437,7 +396,4 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
     }
 
-    public interface ClickChatHeadListener{
-        void onClick(User user);
-    }
 }

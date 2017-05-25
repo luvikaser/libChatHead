@@ -14,7 +14,7 @@ public class ChatHeadDefaultConfig extends ChatHeadConfig {
         setHeadWidth(ChatHeadUtils.dpToPx(context, diameter));
         setHeadHorizontalSpacing(ChatHeadUtils.dpToPx(context, 10));
         setHeadVerticalSpacing(ChatHeadUtils.dpToPx(context, 5));
-        setInitialPosition(new Point(0, ChatHeadUtils.dpToPx(context, 0)));
+        setInitialPosition(new Point(0, ChatHeadUtils.dpToPx(context, 100)));
         setCloseButtonHidden(false);
         setCloseButtonWidth(ChatHeadUtils.dpToPx(context, 70));
         setCloseButtonHeight(ChatHeadUtils.dpToPx(context, 70));
