@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.pkmmte.view/circularimageview/1.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c341a7ad32bc2eef9dcfab239262b77ac60788cc">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.pkmmte.view-circularimageview-1.1_1fda71ed239bdb0e69465535d14f9b9e56e0a2dc/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="810f41e5b7fd99f196ebeabe865ba2c54e7e76dc">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-25.2.0_46bcbc2d9787abf6e7fa390009f588112773abc9/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ee394a892dd21c03a528139c1e8d4e0e1264ac84">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-25.2.0_0d20e6a4c31b03d7e5431fa5b551db8f60062fc8/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-compat/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="67eb33110dbacb46a48175b08ae0c96761d2c17d">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-25.2.0_c9a025addb5224c086b1789f7f91f85db71eeebe/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d694f61c04acc487423d0fb4ff5001a370b2cfeb">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_1dc9ea2ad7005fc3aab3c294ba990a7675dbc240/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="44f9468b9c65f19e33941c0a88cd095996859a92">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_1506e52e6d34168faaaa9b7bd4972e4869d73d35/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/25.2.0/support-annotations-25.2.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4a5a82a027706397fff621b22fd6fa796e91d7c5">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-25.2.0_b1b3376b510caee7ceeba32b53a9040ff41cdac3/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="cb454b52545859ed2f24a6c01366805b0fa04b22">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-25.2.0_0570d5439dac73331edc5d1643b04a4e38208a52/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fa0446a14ed5dd3725047d6399ffea771a564b30">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-25.2.0_9d51cd3c0a6ff75286e20fef059042dfc4ecde0f/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-v4/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-25.2.0_0d678c8ebbbae7b774c9e93bd6fe5adf275817bc/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-fragment/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="8fe8a8f77d651982ce5e18f6187dc4daf914ac57">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-25.2.0_e09d7217313c1e4ed0ffdd619fbae712b49d20d0/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="702d339bc0a81d21354cd7e2cf2b67225fa4a16c">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-25.2.0_bf5642d89c35328d7f2abfa44cddffc80ae673a5/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/.gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.7/da23f0d13a0a572e01a1b53b547cbdc7a5b52209/rebound-0.3.7.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="da23f0d13a0a572e01a1b53b547cbdc7a5b52209">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/rebound-0.3.7_9b32e66c8965d5b819de635c3bc4dab37e903fa3/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.2.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="e820b7be8c035dd522da4bc822e8a76c8e27921a">
+        <dex dex="/home/cpu1-216-local/AndroidStudioProjects/libChatHead/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-25.2.0_a65369ed583e2f1246ec084638d2095844289437/classes.dex" />
+    </item>
+
+</items>

@@ -178,7 +178,6 @@ public class ChatHead extends ImageView implements SpringListener {
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
-
         if(xPositionSpring == null || yPositionSpring == null) return false;
         //Chathead view will set the correct active springs on touch
         Spring activeHorizontalSpring = xPositionSpring;

@@ -93,6 +93,7 @@ public class ChatHead{
 
     public void close(){
         chatHeadManager.removeAllChatHeads();
+        chatHeadContainer.removeView(chatHeadManager.getCloseButton());
         chatHeadManager = null;
     }
 
