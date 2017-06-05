@@ -2,6 +2,7 @@ package chathead.ChatHeadUI;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -29,6 +30,7 @@ public class ChatHead extends ImageView implements SpringListener {
 
     public final int CLOSE_ATTRACTION_THRESHOLD = ChatHeadUtils.dpToPx(getContext(), 110);
     private final int touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+    private final int longPressSlop = ViewConfiguration.get(getContext()).getLongPressTimeout();
     private ChatHeadManager manager;
     private SpringSystem springSystem;
     private State state;
@@ -174,6 +176,14 @@ public class ChatHead extends ImageView implements SpringListener {
 
     }
 
+    final Handler handler = new Handler();
+    Runnable mLongPressed = new Runnable() {
+        public void run() {
+            scaleSpring.setEndValue(.9f);
+            manager.getCloseButton().appear();
+            manager.getCloseButton().pointTo(manager.getCloseButton().centerX, manager.getCloseButton().centerY);
+        }
+    };
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
@@ -184,12 +194,13 @@ public class ChatHead extends ImageView implements SpringListener {
         Spring activeVerticalSpring = yPositionSpring;
 
         int action = event.getAction();
-        float rawX = event.getRawX();
-        float rawY = event.getRawY();
+        final float rawX = event.getRawX();
+        final float rawY = event.getRawY();
         float offsetX = rawX - downX;
         float offsetY = rawY - downY;
         event.offsetLocation(manager.getChatHeadContainer().getViewX(this), manager.getChatHeadContainer().getViewY(this));
         if (action == MotionEvent.ACTION_DOWN) {
+            handler.postDelayed(mLongPressed, longPressSlop);
             if (velocityTracker == null) {
                 velocityTracker = VelocityTracker.obtain();
             } else {
@@ -202,14 +213,12 @@ public class ChatHead extends ImageView implements SpringListener {
             downY = rawY;
             downTranslationX = (float) activeHorizontalSpring.getCurrentValue();
             downTranslationY = (float) activeVerticalSpring.getCurrentValue();
-            scaleSpring.setEndValue(.9f);
             activeHorizontalSpring.setAtRest();
             activeVerticalSpring.setAtRest();
             velocityTracker.addMovement(event);
         } else if (action == MotionEvent.ACTION_MOVE) {
             if (Math.hypot(offsetX, offsetY) > touchSlop) {
                 isDragging = true;
-                manager.getCloseButton().appear();
             }
             velocityTracker.addMovement(event);
 
@@ -240,6 +249,8 @@ public class ChatHead extends ImageView implements SpringListener {
 
         } else {
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                handler.removeCallbacks(mLongPressed);
+                manager.getCloseButton().disappear();
                 if (velocityTracker == null) {
                     velocityTracker = VelocityTracker.obtain();
                 }

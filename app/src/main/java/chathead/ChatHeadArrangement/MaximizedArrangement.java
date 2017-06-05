@@ -85,7 +85,6 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
 
             }
-            android.util.Log.e("test", currentChatHead.getUser().id+"");
             selectChatHead(currentChatHead);
         }
     }

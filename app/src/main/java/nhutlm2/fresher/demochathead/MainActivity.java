@@ -50,8 +50,9 @@ public class MainActivity extends AppCompatActivity {
        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
        User user2 = new User(2, 10, bitmap2);
        chatHead.push(user2);
-       User user3 = new User(3, 17, bitmap2);
+       User user3 = new User(3, 15, bitmap2);
        chatHead.push(user3);
+
        ((Button)findViewById(R.id.text)).setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {

@@ -27,10 +27,10 @@ public class ChatHeadCloseButton extends ImageView {
     private Spring scaleSpring;
     private Spring xSpring;
     private Spring ySpring;
-    private boolean disappeared;
+    private boolean disappeared = true;
     private ChatHeadManager chatHeadManager;
-    private int centerX;
-    private int centerY;
+    public int centerX;
+    public int centerY;
 
     public ChatHeadCloseButton(Context context, ChatHeadManager manager) {
         super(context);
@@ -107,13 +107,6 @@ public class ChatHeadCloseButton extends ImageView {
         ySpring.setEndValue(mParentHeight - centerY + chatHeadManager.getConfig().getCloseButtonHeight());
         ySpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);
         xSpring.setEndValue(0);
-        ySpring.addListener(new SimpleSpringListener() {
-            @Override
-            public void onSpringAtRest(Spring spring) {
-                super.onSpringAtRest(spring);
-                ySpring.removeListener(this);
-            }
-        });
         scaleSpring.setEndValue(0.1f);
         disappeared = true;
 
@@ -121,12 +114,14 @@ public class ChatHeadCloseButton extends ImageView {
 
     //when close button is captured
     public void onCapture() {
-        scaleSpring.setEndValue(1);
+        if (!disappeared)
+            scaleSpring.setEndValue(1);
     }
 
     //when close button is released
     public void onRelease() {
-        scaleSpring.setEndValue(0.8);
+        if (!disappeared)
+            scaleSpring.setEndValue(0.8);
     }
 
     @Override

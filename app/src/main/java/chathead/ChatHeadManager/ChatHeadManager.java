@@ -52,6 +52,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     private final Context context;
     private final ChatHeadContainer chatHeadContainer;
     private List<ChatHead> chatHeads;
+    private List<ChatHead> requestBringToFronts = new ArrayList<>();
     private int maxWidth;
     private int maxHeight;
     private ChatHeadCloseButton closeButton;
@@ -139,14 +140,20 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
                 }
             }
+            if (requestBringToFronts.size() > 0){
+                for(ChatHead chatHead: requestBringToFronts){
+                    activeArrangement.bringToFront(chatHead);
+                }
+                requestBringToFronts.clear();
+            }
         }
-
     }
 
 
 
     @Override
     public ChatHead addChatHead(User user) {
+
         ChatHead chatHead = findChatHeadByKey(user);
         if (chatHead == null) {
             chatHead = new ChatHead(this, springSystem, getContext());
@@ -254,6 +261,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         springSystem = SpringSystem.create();
         SpringConfigRegistry.getInstance().addSpringConfig(SpringConfigsHolder.DRAGGING, "dragging mode");
         SpringConfigRegistry.getInstance().addSpringConfig(SpringConfigsHolder.NOT_DRAGGING, "not dragging mode");
+
     }
 
 
@@ -276,6 +284,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         chatHeadContainer.requestLayout();
     }
 
+
     /**
      * Should only be called after onMeasure
      *
@@ -296,6 +305,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
             oldArrangement = activeArrangement;
         }
         activeArrangement = requestedArrangement;
+
         requestedArrangement.onActivate(this, extras, maxWidth, maxHeight);
         if (hasChanged) {
             chatHeadContainer.onArrangementChanged(oldArrangement, newArrangement);
@@ -344,6 +354,8 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     public void bringToFront(ChatHead chatHead) {
         if (activeArrangement != null) {
             activeArrangement.bringToFront(chatHead);
+        } else{
+            requestBringToFronts.add(chatHead);
         }
     }
 

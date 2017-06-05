@@ -83,6 +83,7 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
     @Override
     public void onActivate(ChatHeadManager container, Bundle extras, int maxWidth, int maxHeight) {
         this.extras = extras;
+        android.util.Log.e("test", extras+" " + maxHeight +" "+ maxWidth);
         int heroIndex = 0;
         if (extras != null) {
             heroIndex = extras.getInt(BUNDLE_HERO_INDEX_KEY, -1);
@@ -127,7 +128,6 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
                     });
                     currentSpring = verticalSpringChain.getAllSprings().get(verticalSpringChain.getAllSprings().size() - 1);
                     currentSpring.setCurrentValue(chatHead.getVerticalSpring().getCurrentValue());
-                    manager.getChatHeadContainer().bringToFront(chatHead);
                 }
             }
             if (relativeXPosition == -1) {
@@ -353,13 +353,11 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
                 double xPosition = activeHorizontalSpring.getCurrentValue();
                 if (xPosition + manager.getConfig().getHeadWidth() > maxWidth && activeHorizontalSpring.getVelocity() > 0) {
                     //outside the right bound
-                    //System.out.println("outside the right bound !! xPosition = " + xPosition);
                     int newPos = maxWidth - manager.getConfig().getHeadWidth();
                     activeHorizontalSpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);
                     activeHorizontalSpring.setEndValue(newPos);
                 } else if (xPosition < 0 && activeHorizontalSpring.getVelocity() < 0) {
                     //outside the left bound
-                    //System.out.println("outside the left bound !! xPosition = " + xPosition);
                     activeHorizontalSpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);
                     activeHorizontalSpring.setEndValue(0);
 
@@ -397,8 +395,14 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
             double distanceCloseButtonFromHead = manager.getDistanceCloseButtonFromHead((float) activeHorizontalSpring.getCurrentValue() + manager.getConfig().getHeadWidth() / 2, (float) activeVerticalSpring.getCurrentValue() + manager.getConfig().getHeadHeight() / 2);
 
             if (distanceCloseButtonFromHead < activeChatHead.CLOSE_ATTRACTION_THRESHOLD && activeHorizontalSpring.getSpringConfig() == SpringConfigsHolder.DRAGGING && activeVerticalSpring.getSpringConfig() == SpringConfigsHolder.DRAGGING) {
+
                 activeHorizontalSpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);
                 activeVerticalSpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);
+
+                if (manager.getCloseButton().isDisappeared()) {
+                    manager.getCloseButton().appear();
+                    manager.getCloseButton().pointTo(manager.getCloseButton().centerX, manager.getCloseButton().centerY);
+                }
                 activeChatHead.setState(ChatHead.State.CAPTURED);
 
             }
@@ -414,19 +418,12 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
                 manager.getCloseButton().onCapture();
                 manager.getCloseButton().disappear();
             }
-
-            if (!activeVerticalSpring.isAtRest()) {
-                manager.getCloseButton().appear();
-            } else {
-                manager.getCloseButton().disappear();
-            }
-
         }
 
 
     }
     private Bundle getBundle(int heroIndex) {
-        if(hero!=null) {
+        if(hero != null) {
             relativeXPosition = hero.getHorizontalSpring().getCurrentValue() * 1.0 / maxWidth;
             relativeYPosition = hero.getVerticalSpring().getCurrentValue() * 1.0 / maxHeight;
         }
@@ -442,8 +439,13 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
     }
     @Override
     public void bringToFront(ChatHead chatHead) {
-        Bundle b = getBundle(getHeroIndex(chatHead));
-        onActivate(manager, b, manager.getMaxWidth(), manager.getMaxHeight());
+        hero = chatHead;
+        hero.setHero(true);
+        for(ChatHead ch: manager.getChatHeads()){
+            if (ch != hero)
+                ch.setHero(false);
+        }
+        manager.getChatHeadContainer().bringToFront(hero);
     }
 
 }

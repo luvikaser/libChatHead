@@ -168,7 +168,8 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
     @Override
     public void onArrangementChanged(ChatHeadArrangement oldArrangement, ChatHeadArrangement newArrangement) {
         currentArrangement = newArrangement;
-        if (oldArrangement instanceof MinimizedArrangement && newArrangement instanceof MaximizedArrangement) {
+
+        if (newArrangement instanceof MaximizedArrangement) {
             // about to be maximized
             WindowManager.LayoutParams layoutParams = getOrCreateLayoutParamsForContainer(motionCaptureView);
             layoutParams.flags |= FLAG_NOT_FOCUSABLE | FLAG_NOT_TOUCHABLE;

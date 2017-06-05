@@ -9,6 +9,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
 
+import chathead.ChatHeadArrangement.MaximizedArrangement;
 import chathead.ChatHeadArrangement.MinimizedArrangement;
 import chathead.ChatHeadManager.ChatHeadManager;
 import chathead.ChatHeadUI.ChatHeadContainer.ChatHeadContainer;
@@ -80,7 +81,7 @@ public class ChatHead{
 
         });
 
-        chatHeadManager.setArrangement(MinimizedArrangement.class, null);
+        chatHeadManager.setArrangement(MaximizedArrangement.class, null);
     }
 
     public void push(User user) {
