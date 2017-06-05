@@ -20,6 +20,8 @@ import chathead.Utils.ChatHeadUtils;
 
 import static android.content.Context.WINDOW_SERVICE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN;
+import static android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
@@ -179,9 +181,7 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
             layoutParams.flags &= ~FLAG_NOT_FOCUSABLE; //add focusability
             layoutParams.flags &= ~FLAG_NOT_TOUCHABLE; //add focusability
             layoutParams.flags |= FLAG_NOT_TOUCH_MODAL;
-
             windowManager.updateViewLayout(getFrameLayout(), layoutParams);
-
             setContainerX(motionCaptureView, 0);
             setContainerY(motionCaptureView, 0);
             setContainerWidth(motionCaptureView, getFrameLayout().getMeasuredWidth());

@@ -47,20 +47,6 @@ public class ChatHead extends ImageView implements SpringListener {
     private Spring xPositionSpring;
     private Spring yPositionSpring;
     private boolean isHero;
-//    public ChatHead(Context context) {
-//        super(context);
-//        throw new IllegalArgumentException("This constructor cannot be used");
-//    }
-//
-//    public ChatHead(Context context, AttributeSet attrs) {
-//        super(context, attrs);
-//        throw new IllegalArgumentException("This constructor cannot be used");
-//    }
-//
-//    public ChatHead(Context context, AttributeSet attrs, int defStyleAttr) {
-//        super(context, attrs, defStyleAttr);
-//        throw new IllegalArgumentException("This constructor cannot be used");
-//    }
 
     public ChatHead(ChatHeadManager manager, SpringSystem springsHolder, Context context) {
         super(context);

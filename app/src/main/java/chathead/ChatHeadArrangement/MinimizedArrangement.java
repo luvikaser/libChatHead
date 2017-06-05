@@ -1,6 +1,7 @@
 package chathead.ChatHeadArrangement;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -83,7 +84,6 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
     @Override
     public void onActivate(ChatHeadManager container, Bundle extras, int maxWidth, int maxHeight) {
         this.extras = extras;
-        android.util.Log.e("test", extras+" " + maxHeight +" "+ maxWidth);
         int heroIndex = 0;
         if (extras != null) {
             heroIndex = extras.getInt(BUNDLE_HERO_INDEX_KEY, -1);
@@ -98,9 +98,8 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
         MAX_VELOCITY_FOR_IDLING = ChatHeadUtils.dpToPx(container.getDisplayMetrics(), 1);
 
         List<ChatHead> chatHeads = container.getChatHeads();
-        if (heroIndex < 0 || heroIndex > chatHeads.size() - 1) {
-            heroIndex = 0;
-        }
+        if (heroIndex < 0 || heroIndex > chatHeads.size() - 1)
+            heroIndex = chatHeads.size() - 1;
         if (heroIndex < chatHeads.size()) {
             hero = chatHeads.get(heroIndex);
             hero.setHero(true);
@@ -128,6 +127,7 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
                     });
                     currentSpring = verticalSpringChain.getAllSprings().get(verticalSpringChain.getAllSprings().size() - 1);
                     currentSpring.setCurrentValue(chatHead.getVerticalSpring().getCurrentValue());
+                    manager.getChatHeadContainer().bringToFront(chatHead);
                 }
             }
             if (relativeXPosition == -1) {
@@ -439,13 +439,9 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
     }
     @Override
     public void bringToFront(ChatHead chatHead) {
-        hero = chatHead;
-        hero.setHero(true);
-        for(ChatHead ch: manager.getChatHeads()){
-            if (ch != hero)
-                ch.setHero(false);
-        }
-        manager.getChatHeadContainer().bringToFront(hero);
+        Bundle b = getBundle(getHeroIndex(chatHead));
+        onActivate(manager, b, manager.getMaxWidth(), manager.getMaxHeight());
+
     }
 
 }

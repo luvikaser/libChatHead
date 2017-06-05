@@ -81,7 +81,7 @@ public class ChatHead{
 
         });
 
-        chatHeadManager.setArrangement(MaximizedArrangement.class, null);
+        chatHeadManager.setArrangement(MinimizedArrangement.class, null);
     }
 
     public void push(User user) {
@@ -98,4 +98,11 @@ public class ChatHead{
         chatHeadManager = null;
     }
 
+    public void minimize(){
+        chatHeadManager.setArrangement(MinimizedArrangement.class, null);
+    }
+
+    public void maximize(){
+        chatHeadManager.setArrangement(MaximizedArrangement.class, null);
+    }
 }

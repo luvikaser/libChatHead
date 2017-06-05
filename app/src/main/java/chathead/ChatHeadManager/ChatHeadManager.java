@@ -52,7 +52,6 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     private final Context context;
     private final ChatHeadContainer chatHeadContainer;
     private List<ChatHead> chatHeads;
-    private List<ChatHead> requestBringToFronts = new ArrayList<>();
     private int maxWidth;
     private int maxHeight;
     private ChatHeadCloseButton closeButton;
@@ -140,12 +139,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
                 }
             }
-            if (requestBringToFronts.size() > 0){
-                for(ChatHead chatHead: requestBringToFronts){
-                    activeArrangement.bringToFront(chatHead);
-                }
-                requestBringToFronts.clear();
-            }
+
         }
     }
 
@@ -354,8 +348,6 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     public void bringToFront(ChatHead chatHead) {
         if (activeArrangement != null) {
             activeArrangement.bringToFront(chatHead);
-        } else{
-            requestBringToFronts.add(chatHead);
         }
     }
 

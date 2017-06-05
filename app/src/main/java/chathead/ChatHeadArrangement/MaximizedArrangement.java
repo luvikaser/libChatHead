@@ -47,7 +47,8 @@ public class MaximizedArrangement extends ChatHeadArrangement {
         this.extras = extras;
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
-        MIN_VELOCITY_TO_POSITION_BACK = ChatHeadUtils.dpToPx(container.getDisplayMetrics(), 50);
+
+    MIN_VELOCITY_TO_POSITION_BACK = ChatHeadUtils.dpToPx(container.getDisplayMetrics(), 50);
         MAX_DISTANCE_FROM_ORIGINAL = ChatHeadUtils.dpToPx(container.getContext(), 10);
 
         List<ChatHead> chatHeads = manager.getChatHeads();
@@ -262,6 +263,7 @@ public class MaximizedArrangement extends ChatHeadArrangement {
     @Override
     public void onChatHeadAdded(final ChatHead chatHead) {
         //we post so that chat head measurement is done
+
         Spring spring = chatHead.getHorizontalSpring();
         spring.setCurrentValue(maxWidth).setAtRest();
         spring = chatHead.getVerticalSpring();
@@ -307,7 +309,7 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
     @Override
     public Bundle getBundleWithHero() {
-        Bundle bundle = extras;
+        Bundle bundle = new Bundle();
         if (bundle == null) {
             bundle = new Bundle();
         }

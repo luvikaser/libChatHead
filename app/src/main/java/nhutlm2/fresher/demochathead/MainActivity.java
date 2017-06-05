@@ -20,6 +20,7 @@ import chathead.User;
 
 
 import static android.view.View.GONE;
+import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
 import static android.view.View.VISIBLE;
 
 /**
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermission();
-
     }
 
    public void test(){
@@ -52,19 +52,15 @@ public class MainActivity extends AppCompatActivity {
        chatHead.push(user2);
        User user3 = new User(3, 15, bitmap2);
        chatHead.push(user3);
-
+       User user4 = new User(4, 16, bitmap2);
+       chatHead.push(user4);
        ((Button)findViewById(R.id.text)).setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               if (chatHead == null){
-                   chatHead = new ChatHead(getApplicationContext());
-               }
-               chatHead.start();
-
                BitmapFactory.Options options = new BitmapFactory.Options();
                options.inSampleSize = 4;
                Bitmap bitmap3 = BitmapFactory.decodeResource(getResources(), R.drawable.dismiss_big, options);
-               User user3 = new User(2, 14, bitmap3);
+               User user3 = new User(5, 14, bitmap3);
                chatHead.push(user3);
            }
        });
