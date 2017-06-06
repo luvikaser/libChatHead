@@ -60,9 +60,9 @@ public class MaximizedArrangement extends ChatHeadArrangement {
             heroIndex = getHeroIndex(); //this means we have a current chat head and we carry it forward
         }
         if (heroIndex < 0 || heroIndex > chatHeads.size() - 1) {
-            heroIndex = 0;
+            heroIndex = chatHeads.size() - 1;
         }
-        if (chatHeads.size() > 0 && heroIndex < chatHeads.size()) {
+        if (chatHeads.size() > 0 && heroIndex < chatHeads.size() && heroIndex >= 0) {
             currentChatHead = chatHeads.get(heroIndex);
             maxDistanceFromOriginal = (int) MAX_DISTANCE_FROM_ORIGINAL;
 
