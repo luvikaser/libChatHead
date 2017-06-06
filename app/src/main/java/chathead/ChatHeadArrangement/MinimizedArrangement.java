@@ -100,7 +100,7 @@ public class MinimizedArrangement<User extends Serializable> extends ChatHeadArr
         List<ChatHead> chatHeads = container.getChatHeads();
         if (heroIndex < 0 || heroIndex > chatHeads.size() - 1)
             heroIndex = chatHeads.size() - 1;
-        if (heroIndex < chatHeads.size()) {
+        if (heroIndex < chatHeads.size() && heroIndex >= 0) {
             hero = chatHeads.get(heroIndex);
             hero.setHero(true);
             horizontalSpringChain = SpringChain.create();
