@@ -76,6 +76,7 @@ public class ChatHead extends ImageView implements SpringListener {
             @Override
             public void onSpringUpdate(Spring spring) {
                 super.onSpringUpdate(spring);
+            //    android.util.Log.e("x", (int)spring.getCurrentValue()+"");
                 manager.getChatHeadContainer().setViewX(ChatHead.this, (int)spring.getCurrentValue());
             }
 
@@ -213,6 +214,10 @@ public class ChatHead extends ImageView implements SpringListener {
                 if (manager.getActiveArrangement().canDrag(this)) {
                     double distanceCloseButtonFromHead = manager.getDistanceCloseButtonFromHead(rawX, rawY);
                     if (distanceCloseButtonFromHead < CLOSE_ATTRACTION_THRESHOLD) {
+                        if (manager.getCloseButton().isDisappeared()) {
+                            manager.getCloseButton().appear();
+                            manager.getCloseButton().pointTo(manager.getCloseButton().centerX, manager.getCloseButton().centerY);
+                        }
                         setState(State.CAPTURED);
                         activeHorizontalSpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);
                         activeVerticalSpring.setSpringConfig(SpringConfigsHolder.NOT_DRAGGING);

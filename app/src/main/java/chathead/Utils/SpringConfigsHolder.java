@@ -7,7 +7,7 @@ import com.facebook.rebound.SpringConfig;
  */
 
 public class SpringConfigsHolder {
-    public static SpringConfig NOT_DRAGGING = SpringConfig.fromOrigamiTensionAndFriction(220D, 65D);
+    public static SpringConfig NOT_DRAGGING = SpringConfig.fromOrigamiTensionAndFriction(220D, 15D);
     public static SpringConfig CAPTURING = SpringConfig.fromOrigamiTensionAndFriction(100, 10);
-    public static SpringConfig DRAGGING = SpringConfig.fromOrigamiTensionAndFriction(0, 1.5D);
+    public static SpringConfig DRAGGING = SpringConfig.fromOrigamiTensionAndFriction(0, 7D);
 }

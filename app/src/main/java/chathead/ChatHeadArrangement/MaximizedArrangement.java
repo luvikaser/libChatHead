@@ -68,7 +68,7 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
             int spacing = container.getConfig().getHeadHorizontalSpacing();
             int widthPerHead = container.getConfig().getHeadWidth();
-            topPadding = ChatHeadUtils.dpToPx(container.getContext(), 5);
+            topPadding = ChatHeadUtils.dpToPx(container.getContext(), 0);
             int leftIndent = maxWidth - (chatHeads.size() * (widthPerHead + spacing));
             for (int i = 0; i < chatHeads.size(); i++) {
                 ChatHead chatHead = chatHeads.get(i);
@@ -309,7 +309,7 @@ public class MaximizedArrangement extends ChatHeadArrangement {
 
     @Override
     public Bundle getBundleWithHero() {
-        Bundle bundle = new Bundle();
+        Bundle bundle = extras;
         if (bundle == null) {
             bundle = new Bundle();
         }
@@ -358,7 +358,7 @@ public class MaximizedArrangement extends ChatHeadArrangement {
     @Override
     public void bringToFront(final ChatHead chatHead) {
         //nothing to do, everything is in front.
-        selectChatHead(chatHead);
+      //  selectChatHead(chatHead);
     }
 
     private void hideView() {

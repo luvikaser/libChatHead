@@ -260,16 +260,11 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
 
     public double getDistanceCloseButtonFromHead(float touchX, float touchY) {
-        if (closeButton.isDisappeared()) {
-            return Double.MAX_VALUE;
-        } else {
-            int left = closeButton.getLeft();
-            int top = closeButton.getTop();
-            double xDiff = touchX - left - getChatHeadContainer().getViewX(closeButton) - closeButton.getMeasuredWidth() / 2;
-            double yDiff = touchY - top - getChatHeadContainer().getViewY(closeButton) - closeButton.getMeasuredHeight() / 2;
-            double distance = Math.hypot(xDiff, yDiff);
-            return distance;
-        }
+        double xDiff = touchX - closeButton.centerX;
+        double yDiff = touchY - closeButton.centerY;
+        double distance = Math.hypot(xDiff, yDiff);
+        return distance;
+
     }
 
     @Override

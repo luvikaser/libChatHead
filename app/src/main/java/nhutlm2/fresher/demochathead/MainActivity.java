@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,17 @@ public class MainActivity extends AppCompatActivity {
         checkPermission();
     }
 
+    final Handler handler = new Handler();
+    Runnable mLongPressed = new Runnable() {
+        public void run() {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+
+            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
+            User user2 = new User(5, 19, bitmap2);
+            chatHead.push(user2);
+        }
+    };
    public void test(){
        if (chatHead == null){
            chatHead = new ChatHead(getApplicationContext());
@@ -52,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
        chatHead.push(user2);
        User user3 = new User(3, 15, bitmap2);
        chatHead.push(user3);
-       User user4 = new User(4, 16, bitmap2);
-       chatHead.push(user4);
+       handler.postDelayed(mLongPressed, 5000);
+
+//       User user4 = new User(4, 16, bitmap2);
+//       chatHead.push(user4);
        ((Button)findViewById(R.id.text)).setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {

@@ -95,8 +95,9 @@ public class ChatHead{
     public void close(){
         chatHeadManager.removeAllChatHeads();
         chatHeadContainer.removeView(chatHeadManager.getCloseButton());
-        chatHeadManager = null;
     }
+
+
 
     public void minimize(){
         chatHeadManager.setArrangement(MinimizedArrangement.class, null);
