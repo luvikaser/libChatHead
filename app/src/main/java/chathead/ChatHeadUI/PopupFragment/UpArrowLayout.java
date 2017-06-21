@@ -46,6 +46,8 @@ public class UpArrowLayout extends ViewGroup {
         addView(arrowView);
     }
 
+
+
     protected ImageView createArrowView() {
         Drawable drawable = getResources().getDrawable(arrowDrawable);
         ImageView imageView = new ImageView(getContext());

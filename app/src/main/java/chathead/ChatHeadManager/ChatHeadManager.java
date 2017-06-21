@@ -1,19 +1,24 @@
 package chathead.ChatHeadManager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.facebook.rebound.SpringConfigRegistry;
 import com.facebook.rebound.SpringSystem;
@@ -38,6 +43,7 @@ import chathead.ChatHeadUI.PopupFragment.UpArrowLayout;
 import chathead.User;
 import chathead.Utils.ChatHeadConfig;
 import chathead.Utils.ChatHeadDefaultConfig;
+import chathead.Utils.ChatHeadUtils;
 import chathead.Utils.SpringConfigsHolder;
 import nhutlm2.fresher.demochathead.R;
 
@@ -48,6 +54,9 @@ import static android.view.View.GONE;
  */
 
 public class ChatHeadManager implements ChatHeadManagerListener {
+    public static final String PREFERENCE_FILE_KEY = "preference_chat_head";
+    public static final String IDLE_STATE_X = "idle_state_x";
+    public static final String IDLE_STATE_Y = "idle_state_y";
     private final Map<Class<? extends ChatHeadArrangement>, ChatHeadArrangement> arrangements = new HashMap<>(3);
     private final Context context;
     private final ChatHeadContainer chatHeadContainer;
@@ -58,10 +67,11 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     private ChatHeadArrangement activeArrangement;
     private SpringSystem springSystem;
     private ChatHeadConfig config;
-    private ArrangementChangeRequest requestedArrangement;
+    public ArrangementChangeRequest requestedArrangement;
     private DisplayMetrics displayMetrics;
     private UpArrowLayout arrowLayout;
     private ChatHeadViewAdapter viewAdapter;
+    public TextView bubbleText = null;
     public ChatHeadManager(Context context, ChatHeadContainer chatHeadContainer) {
         this.context = context;
         this.chatHeadContainer = chatHeadContainer;
@@ -115,8 +125,9 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
     @Override
     public void onMeasure(int height, int width) {
+
         boolean needsLayout = false;
-        if (height != maxHeight && width != maxWidth) {
+        if (height != maxHeight && width != maxWidth && maxHeight != 0 && maxWidth != 0) {
             needsLayout = true; // both changed, must be screen rotation.
         }
         maxHeight = height;
@@ -146,7 +157,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
 
 
     @Override
-    public ChatHead addChatHead(User user) {
+    public ChatHead addChatHead(User user, boolean bringToFront) {
 
         ChatHead chatHead = findChatHeadByKey(user);
         if (chatHead == null) {
@@ -163,12 +174,27 @@ public class ChatHeadManager implements ChatHeadManagerListener {
                     removeChatHead(chatHeads.get(0).getUser());
                 }
             }
-            if (activeArrangement != null)
-                activeArrangement.onChatHeadAdded(chatHead);
-            else {
-                chatHead.getHorizontalSpring().setCurrentValue(-100);
-                chatHead.getVerticalSpring().setCurrentValue(-100);
+            if (activeArrangement != null) {
+                int padding = (activeArrangement instanceof MinimizedArrangement) ? ChatHeadUtils.dpToPx(getContext(), 6) : 0;
+                chatHead.setPadding(padding);
+                activeArrangement.onChatHeadAdded(chatHead, bringToFront);
             }
+            else {
+                SharedPreferences sharedPref = getContext().getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+                int initX = (sharedPref.getInt(IDLE_STATE_X, 0) <= 0) ? (sharedPref.getInt(IDLE_STATE_X, 0) - 100) : (sharedPref.getInt(IDLE_STATE_X, 0) + 100);
+                int initY = sharedPref.getInt(IDLE_STATE_Y, 0) - 200;
+                chatHead.getHorizontalSpring().setCurrentValue(initX);
+                chatHead.getVerticalSpring().setCurrentValue(initY);
+            }
+        } else{
+            chatHead.setUser(user);
+            if (activeArrangement != null && activeArrangement instanceof MaximizedArrangement && bringToFront) {
+                ((MaximizedArrangement) activeArrangement).switchTab(chatHead);
+            }
+            if (activeArrangement != null && activeArrangement instanceof MinimizedArrangement) {
+                activeArrangement.onChatHeadAdded(chatHead, true);
+            }
+
         }
         reloadDrawable(user);
         return chatHead;
@@ -184,9 +210,8 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         return null;
     }
 
-    private Drawable getChatHeadDrawable(User user) {
+    private ChatHeadDrawable getChatHeadDrawable(User user) {
         ChatHeadDrawable chatHeadDrawable = new ChatHeadDrawable();
-
         chatHeadDrawable.setAvatarDrawer(new AvatarDrawer(user.avatar, new BitmapShader(user.avatar, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)));
         if (user.countMessage != 0)
             chatHeadDrawable.setNotificationDrawer(new NotificationDrawer().setNotificationText(String.valueOf(user.countMessage)).setNotificationAngle(135).setNotificationColor(Color.WHITE, Color.RED));
@@ -196,7 +221,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     @Override
     public void reloadDrawable(User user) {
         if (findChatHeadByKey(user) != null) {
-            findChatHeadByKey(user).setImageDrawable(getChatHeadDrawable(user));
+            findChatHeadByKey(user).setChatHeadDrawable(getChatHeadDrawable(user));
         }
     }
 
@@ -225,6 +250,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         if (chatHead != null && chatHead.getParent() != null) {
             chatHead.onRemove();
             chatHeadContainer.removeView(chatHead);
+            removeView(chatHead, getArrowLayout());
             if (activeArrangement != null)
                 activeArrangement.onChatHeadRemoved(chatHead);
         }
@@ -294,8 +320,11 @@ public class ChatHeadManager implements ChatHeadManagerListener {
             oldArrangement = activeArrangement;
         }
         activeArrangement = requestedArrangement;
-
-        requestedArrangement.onActivate(this, extras, maxWidth, maxHeight);
+        int padding = (requestedArrangement instanceof MinimizedArrangement) ? ChatHeadUtils.dpToPx(getContext(), 6) : 0;
+        for(ChatHead chatHead: chatHeads){
+            chatHead.setPadding(padding);
+        }
+        requestedArrangement.onActivate(this, extras, maxWidth, maxHeight, true, null);
         if (hasChanged) {
             chatHeadContainer.onArrangementChanged(oldArrangement, newArrangement);
         }
@@ -324,6 +353,12 @@ public class ChatHeadManager implements ChatHeadManagerListener {
     }
 
     @Override
+    public void setVisibility(int visibility) {
+        chatHeadContainer.setVisibility(visibility);
+        bubbleText.setVisibility(visibility);
+    }
+
+    @Override
     public void detachView(ChatHead chatHead, ViewGroup parent) {
         viewAdapter.detachView(chatHead.getUser(), chatHead, parent);
     }
@@ -337,13 +372,6 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         coords[0] = x;
         coords[1] = y;
         return coords;
-    }
-
-    @Override
-    public void bringToFront(ChatHead chatHead) {
-        if (activeArrangement != null) {
-            activeArrangement.bringToFront(chatHead);
-        }
     }
 
 
@@ -375,7 +403,7 @@ public class ChatHeadManager implements ChatHeadManagerListener {
         }
     }
 
-    private class ArrangementChangeRequest {
+    public class ArrangementChangeRequest {
         private final Class<? extends ChatHeadArrangement> arrangement;
         private final Bundle extras;
 
@@ -393,6 +421,44 @@ public class ChatHeadManager implements ChatHeadManagerListener {
             return arrangement;
         }
 
+    }
+
+    private Handler hideBubblehandler = new Handler();
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            hideBubbleText();
+        }
+    };
+
+    public void hideBubbleText(){
+        if (bubbleText != null){
+            bubbleText.setVisibility(View.GONE);
+            hideBubblehandler.removeCallbacks(runnable);
+        }
+    }
+    public void showBubbleText(String mess, WindowManager.LayoutParams params){
+        hideBubbleText();
+        if (bubbleText == null) {
+            bubbleText = new TextView(context);
+            chatHeadContainer.getWindowManager().addView(bubbleText, params);
+        } else{
+            bubbleText.setVisibility(View.VISIBLE);
+            chatHeadContainer.getWindowManager().updateViewLayout(bubbleText, params);
+        }
+
+        bubbleText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideBubbleText();
+                setArrangement(MaximizedArrangement.class, getActiveArrangement().getBundleWithHero());
+            }
+        });
+        bubbleText.setText(mess);
+        bubbleText.setBackgroundColor(Color.BLUE);
+        bubbleText.setTextColor(Color.WHITE);
+        hideBubblehandler.postDelayed(runnable, 2000);
     }
 
 }

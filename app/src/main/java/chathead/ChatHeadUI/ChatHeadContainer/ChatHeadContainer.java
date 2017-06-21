@@ -3,7 +3,9 @@ package chathead.ChatHeadUI.ChatHeadContainer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -34,20 +36,11 @@ import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
 
 public class ChatHeadContainer extends FrameChatHeadContainer {
 
+    private boolean isDestroyed;
     private View motionCaptureView;
-
     private WindowManager windowManager;
     private ChatHeadArrangement currentArrangement;
     private boolean motionCaptureViewAdded = false;
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            HostFrameLayout frameLayout = getFrameLayout();
-            if (frameLayout != null) {
-                frameLayout.minimize();
-            }
-        }
-    };
 
     public ChatHeadContainer(Context context) {
         super(context);
@@ -56,11 +49,10 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
     @Override
     public void onInitialized(ChatHeadManager manager) {
         super.onInitialized(manager);
+        isDestroyed = false;
         motionCaptureView = new MotionCaptureView(getContext());
-
         MotionCapturingTouchListener listener = new MotionCapturingTouchListener();
         motionCaptureView.setOnTouchListener(listener);
-//        getContext().registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
     }
 
 
@@ -141,6 +133,7 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
     public void addContainer(View container, WindowManager.LayoutParams containerLayoutParams) {
         container.setLayoutParams(containerLayoutParams);
         getWindowManager().addView(container, containerLayoutParams);
+
     }
 
     @Override
@@ -161,7 +154,7 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
         if (view instanceof ChatHead && currentArrangement instanceof MinimizedArrangement) {
             boolean hero = ((ChatHead) view).isHero();
             if (hero) {
-                setContainerY(motionCaptureView, yPosition);
+                setContainerY(motionCaptureView, yPosition - (Build.VERSION.SDK_INT >= 21 ? ChatHeadUtils.dpToPx(getManager().getContext(), 25) : 0));
                 setContainerHeight(motionCaptureView, view.getMeasuredHeight());
             }
         }
@@ -219,22 +212,28 @@ public class ChatHeadContainer extends FrameChatHeadContainer {
     @Override
     public void removeView(View view) {
         super.removeView(view);
-        if (getManager().getChatHeads().size() == 0) {
+        if (getManager().getChatHeads().size() <= 0) {
             windowManager.removeViewImmediate(motionCaptureView);
+            windowManager.removeView(getFrameLayout());
             motionCaptureViewAdded = false;
+            isDestroyed = true;
         }
     }
 
-    public void destroy() {
-//        getContext().unregisterReceiver(mBroadcastReceiver);
-        windowManager.removeViewImmediate(getFrameLayout());
+
+    public void setVisibility(int visibility){
+        getFrameLayout().setVisibility(visibility);
+        motionCaptureView.setVisibility(visibility);
+    }
+    public boolean isDestroyed(){
+        return isDestroyed;
     }
 
 
     protected class MotionCapturingTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            event.offsetLocation(getContainerX(v), getContainerY(v));
+            event.offsetLocation(getContainerX(v), getContainerY(v) + (Build.VERSION.SDK_INT >= 21 ? ChatHeadUtils.dpToPx(getManager().getContext(), 25) : 0));
             HostFrameLayout frameLayout = getFrameLayout();
             if (frameLayout != null) {
                 return frameLayout.dispatchTouchEvent(event);

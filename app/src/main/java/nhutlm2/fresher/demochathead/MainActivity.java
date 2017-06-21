@@ -46,10 +46,56 @@ public class MainActivity extends AppCompatActivity {
 
 
             Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
-            User user2 = new User(5, 19, bitmap2);
-            chatHead.push(user2);
+            User user2 = new User(2, 2, bitmap2, false, "dfgdfsgdfs");
+            chatHead.push(user2, false);
+            handler.postDelayed(mLongPressed1, 3000);
         }
     };
+    Runnable mLongPressed1 = new Runnable() {
+        public void run() {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+
+            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
+            User user2 = new User(3, 3, bitmap2, false, "ffffffffffffff");
+            chatHead.push(user2, false);
+            handler.postDelayed(mLongPressed2, 3000);
+        }
+    };
+    Runnable mLongPressed2 = new Runnable() {
+        public void run() {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+
+            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
+            User user2 = new User(4, 4, bitmap2, false, "ffffffffffffff");
+            chatHead.push(user2, false);
+            handler.postDelayed(mLongPressed3, 3000);
+
+        }
+    };
+    Runnable mLongPressed3 = new Runnable() {
+        public void run() {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+
+            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
+            User user2 = new User(5, 5, bitmap2, false, "ffffffffffffff");
+            chatHead.push(user2, false);
+            handler.postDelayed(mLongPressed4, 3000);
+
+        }
+    };
+        Runnable mLongPressed4 = new Runnable() {
+            public void run() {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+
+
+                Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
+                User user2 = new User(6, 6, bitmap2, false, "ffffffffffffff");
+                chatHead.push(user2, false);
+            }
+        };
    public void test(){
        if (chatHead == null){
            chatHead = new ChatHead(getApplicationContext());
@@ -59,25 +105,29 @@ public class MainActivity extends AppCompatActivity {
        BitmapFactory.Options options = new BitmapFactory.Options();
 
 
-       Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
-       User user2 = new User(2, 10, bitmap2);
-       chatHead.push(user2);
-       User user3 = new User(3, 15, bitmap2);
-       chatHead.push(user3);
-       handler.postDelayed(mLongPressed, 5000);
+       Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.dismiss_big, options);
+       User user2 = new User(0, 0, bitmap2, true, "");
+       chatHead.push(user2, false);
 
-//       User user4 = new User(4, 16, bitmap2);
-//       chatHead.push(user4);
+       final Bitmap bitmap3 = BitmapFactory.decodeResource(getResources(), R.drawable.pic3, options);
+       User user3 = new User(1, 1, bitmap3, false, "23423");
+       chatHead.push(user3, false);
+//       User user4 = new User(4, 2, bitmap3, false, "32432");
+//       chatHead.push(user4, false);
+//       User user5 = new User(5, 3, bitmap3, false, "32432423");
+//       chatHead.push(user5, false);
+
        ((Button)findViewById(R.id.text)).setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               BitmapFactory.Options options = new BitmapFactory.Options();
-               options.inSampleSize = 4;
-               Bitmap bitmap3 = BitmapFactory.decodeResource(getResources(), R.drawable.dismiss_big, options);
-               User user3 = new User(5, 14, bitmap3);
-               chatHead.push(user3);
+               User user5 = new User(7, 6, bitmap3, false, "abcdfsadfdsafdsafasdf");
+               chatHead.push(user5, false);
+
            }
        });
+       handler.postDelayed(mLongPressed, 5000);
+
+
    }
 
     @TargetApi(Build.VERSION_CODES.M)

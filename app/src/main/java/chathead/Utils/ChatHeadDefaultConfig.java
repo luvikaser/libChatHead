@@ -22,6 +22,7 @@ public class ChatHeadDefaultConfig extends ChatHeadConfig {
         setCircularRingWidth(ChatHeadUtils.dpToPx(context, diameter + 5));
         setCircularRingHeight(ChatHeadUtils.dpToPx(context, diameter + 5));
         setMaxChatHeads(5);
+        setnBlockChatHeads(1);
     }
 
     @Override

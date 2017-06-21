@@ -30,7 +30,7 @@ public interface ChatHeadManagerListener {
 
         void onMeasure(int height, int width);
 
-        ChatHead addChatHead(User user);
+        ChatHead addChatHead(User user, boolean bringToFont);
 
         ChatHead findChatHeadByKey(User user);
 
@@ -53,8 +53,6 @@ public interface ChatHeadManagerListener {
 
         int[] getChatHeadCoordsForCloseButton(ChatHead chatHead);
 
-        void bringToFront(ChatHead chatHead);
-
         ChatHeadContainer getChatHeadContainer();
 
         DisplayMetrics getDisplayMetrics();
@@ -72,6 +70,8 @@ public interface ChatHeadManagerListener {
         void detachView(ChatHead chatHead, ViewGroup parent);
 
         void removeView(ChatHead chatHead, ViewGroup parent);
+
+        void setVisibility(int visibility);
 
         UpArrowLayout getArrowLayout();
 

@@ -12,11 +12,14 @@ public class User implements Serializable {
     public int id;
     public int countMessage;
     public Bitmap avatar;
-
-    public User(int id, int countMessage, Bitmap avatar) {
+    public boolean block = false;
+    public String mess;
+    public User(int id, int countMessage, Bitmap avatar, boolean block, String mess) {
         this.id = id;
         this.countMessage = countMessage;
         this.avatar = avatar;
+        this.block = block;
+        this.mess = mess;
     }
 
     public boolean equals(User user){

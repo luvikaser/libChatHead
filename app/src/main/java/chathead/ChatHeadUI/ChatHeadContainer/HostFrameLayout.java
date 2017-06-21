@@ -1,6 +1,7 @@
 package chathead.ChatHeadUI.ChatHeadContainer;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -41,17 +42,13 @@ public class HostFrameLayout extends FrameLayout{
         boolean handled = super.dispatchKeyEvent(event);
         if(!handled) {
             if (event.getAction() == KeyEvent.ACTION_UP && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                minimize();
+                if (!(manager.getActiveArrangement() instanceof MinimizedArrangement)) {
+                    manager.setArrangement(MinimizedArrangement.class, null);
+                }
                 return true;
             }
         }
         return handled;
-    }
-
-    public void minimize() {
-        if (!(manager.getActiveArrangement() instanceof MinimizedArrangement)) {
-            manager.setArrangement(MinimizedArrangement.class, null);
-        }
     }
 
     @Override

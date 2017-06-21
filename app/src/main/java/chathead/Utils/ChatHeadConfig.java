@@ -13,6 +13,16 @@ public class ChatHeadConfig {
     private int headVerticalSpacing;
     private Point initialPosition;
     private int maxChatHeads;
+    private int nBlockChatHeads;
+
+    public int getnBlockChatHeads() {
+        return nBlockChatHeads;
+    }
+
+    public void setnBlockChatHeads(int nBlockChatHeads) {
+        this.nBlockChatHeads = nBlockChatHeads;
+    }
+
     private int closeButtonWidth;
     private int closeButtonHeight;
     private int closeButtonBottomMargin;

@@ -1,14 +1,25 @@
 package chathead.ChatHeadUI;
 
 import android.content.Context;
+import android.graphics.BitmapShader;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -18,6 +29,9 @@ import com.facebook.rebound.SpringSystem;
 import chathead.ChatHeadArrangement.MaximizedArrangement;
 import chathead.ChatHeadArrangement.MinimizedArrangement;
 import chathead.ChatHeadManager.ChatHeadManager;
+import chathead.ChatHeadUI.ChatHeadDrawable.AvatarDrawer;
+import chathead.ChatHeadUI.ChatHeadDrawable.ChatHeadDrawable;
+import chathead.ChatHeadUI.ChatHeadDrawable.NotificationDrawer;
 import chathead.User;
 import chathead.Utils.ChatHeadUtils;
 import chathead.Utils.SpringConfigsHolder;
@@ -46,7 +60,18 @@ public class ChatHead extends ImageView implements SpringListener {
     private Spring scaleSpring;
     private Spring xPositionSpring;
     private Spring yPositionSpring;
-    private boolean isHero;
+    private boolean isHero = false;
+    private boolean isChain = false;
+
+    public boolean isShowBubbleText() {
+        return isShowBubbleText;
+    }
+
+    public void setShowBubbleText(boolean showBubbleText) {
+        isShowBubbleText = showBubbleText;
+    }
+
+    private boolean isShowBubbleText = false;
 
     public ChatHead(ChatHeadManager manager, SpringSystem springsHolder, Context context) {
         super(context);
@@ -54,13 +79,33 @@ public class ChatHead extends ImageView implements SpringListener {
         this.springSystem = springsHolder;
         init();
     }
+    public boolean isDragging(){return  isDragging;}
 
+    public boolean isChain(){ return isChain;}
+
+    public void setChain(boolean chain){
+        isChain = chain;
+    }
     public boolean isHero() {
         return isHero;
     }
 
     public void setHero(boolean hero) {
         isHero = hero;
+    }
+
+
+    public void setChatHeadDrawable(ChatHeadDrawable chatHeadDrawable) {
+        super.setImageDrawable(chatHeadDrawable);
+    }
+    public void setPadding(int padding){
+        int newHeight = manager.getConfig().getHeadHeight() + padding * 2;
+        int newWidth = manager.getConfig().getHeadWidth() + padding * 2;
+        ViewGroup.LayoutParams params = getLayoutParams();
+        params.height = newHeight;
+        params.width = newWidth;
+        setLayoutParams(params);
+        setPadding(padding, padding, padding, padding);
     }
 
     public Spring getHorizontalSpring() {
@@ -76,7 +121,6 @@ public class ChatHead extends ImageView implements SpringListener {
             @Override
             public void onSpringUpdate(Spring spring) {
                 super.onSpringUpdate(spring);
-            //    android.util.Log.e("x", (int)spring.getCurrentValue()+"");
                 manager.getChatHeadContainer().setViewX(ChatHead.this, (int)spring.getCurrentValue());
             }
 
@@ -93,11 +137,13 @@ public class ChatHead extends ImageView implements SpringListener {
             @Override
             public void onSpringUpdate(Spring spring) {
                 super.onSpringUpdate(spring);
+
                 manager.getChatHeadContainer().setViewY(ChatHead.this, (int)spring.getCurrentValue());
             }
 
             @Override
             public void onSpringAtRest(Spring spring) {
+                if (getUser() != null)
                 super.onSpringAtRest(spring);
             }
         };
@@ -111,6 +157,7 @@ public class ChatHead extends ImageView implements SpringListener {
             public void onSpringUpdate(Spring spring) {
                 super.onSpringUpdate(spring);
                 double currentValue = spring.getCurrentValue();
+                if (getUser() != null)
                 setScaleX((float) currentValue);
                 setScaleY((float) currentValue);
             }
@@ -132,6 +179,14 @@ public class ChatHead extends ImageView implements SpringListener {
 
     public void setUser(User user) {
         this.user = user;
+        if (user.mess.length() > 0){
+            if (!isDragging && ((manager.getActiveArrangement() == null &&
+                    manager.requestedArrangement.getArrangement()== MinimizedArrangement.class) || manager.getActiveArrangement() instanceof MinimizedArrangement))
+                isShowBubbleText = true;
+            if (isShowBubbleText && isHero()){
+                showBubbleText();
+            }
+        }
     }
 
     @Override
@@ -149,7 +204,29 @@ public class ChatHead extends ImageView implements SpringListener {
 
     @Override
     public void onSpringAtRest(Spring spring) {
+        if (xPositionSpring == null || yPositionSpring == null || !xPositionSpring.isAtRest() || !yPositionSpring.isAtRest())
+            return;
+        if (isShowBubbleText){
+            if (manager.getActiveArrangement() instanceof MinimizedArrangement) {
+                showBubbleText();
+            } else{
+                isShowBubbleText = false;
+            }
+        }
+    }
+    public void showBubbleText(){
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(150, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.TOP | Gravity.LEFT;
 
+        if (xPositionSpring.getCurrentValue() < manager.getMaxWidth() / 2){
+            params.x = (int) (xPositionSpring.getCurrentValue() + manager.getConfig().getHeadWidth());
+        } else{
+            params.x = (int) (xPositionSpring.getCurrentValue() - 150);
+        }
+        params.y = (int) yPositionSpring.getCurrentValue() - (Build.VERSION.SDK_INT >= 21 ? ChatHeadUtils.dpToPx(manager.getContext(), 25) : 0);
+        manager.showBubbleText(getUser().mess, params);
+        isShowBubbleText = false;
     }
 
     @Override
@@ -187,7 +264,10 @@ public class ChatHead extends ImageView implements SpringListener {
         float offsetY = rawY - downY;
         event.offsetLocation(manager.getChatHeadContainer().getViewX(this), manager.getChatHeadContainer().getViewY(this));
         if (action == MotionEvent.ACTION_DOWN) {
-            handler.postDelayed(mLongPressed, longPressSlop);
+            manager.hideBubbleText();
+            if (!getUser().block) {
+                handler.postDelayed(mLongPressed, longPressSlop);
+            }
             if (velocityTracker == null) {
                 velocityTracker = VelocityTracker.obtain();
             } else {
@@ -203,7 +283,7 @@ public class ChatHead extends ImageView implements SpringListener {
             activeHorizontalSpring.setAtRest();
             activeVerticalSpring.setAtRest();
             velocityTracker.addMovement(event);
-        } else if (action == MotionEvent.ACTION_MOVE) {
+        } else if (action == MotionEvent.ACTION_MOVE && !getUser().block) {
             if (Math.hypot(offsetX, offsetY) > touchSlop) {
                 isDragging = true;
             }
@@ -240,7 +320,9 @@ public class ChatHead extends ImageView implements SpringListener {
 
         } else {
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                handler.removeCallbacks(mLongPressed);
+                if (!getUser().block) {
+                    handler.removeCallbacks(mLongPressed);
+                }
                 manager.getCloseButton().disappear();
                 if (velocityTracker == null) {
                     velocityTracker = VelocityTracker.obtain();
@@ -279,10 +361,6 @@ public class ChatHead extends ImageView implements SpringListener {
         scaleSpring.removeAllListeners();
         scaleSpring.destroy();
         scaleSpring = null;
-    }
-
-    public void setImageDrawable(Drawable chatHeadDrawable) {
-        super.setImageDrawable(chatHeadDrawable);
     }
 
 

@@ -107,9 +107,7 @@ public abstract class FrameChatHeadContainer implements ChatHeadContainerListene
         view.bringToFront();
     }
 
-    public void setVisibility(int visibility){
-        frameLayout.setVisibility(visibility);
-    }
+
 
     public abstract void addContainer(View container, boolean focusable);
 }

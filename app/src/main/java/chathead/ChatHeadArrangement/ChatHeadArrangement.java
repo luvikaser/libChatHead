@@ -13,7 +13,7 @@ import chathead.Utils.ChatHeadConfig;
  */
 
 public abstract class ChatHeadArrangement {
-    public abstract void onActivate(ChatHeadManager container, Bundle extras, int maxWidth, int maxHeight);
+    public abstract void onActivate(ChatHeadManager container, Bundle extras, int maxWidth, int maxHeight, boolean bringToFront, ChatHead activeChatHead);
 
     public abstract void onDeactivate(int maxWidth, int maxHeight);
 
@@ -21,13 +21,10 @@ public abstract class ChatHeadArrangement {
 
     public abstract boolean handleTouchUp(ChatHead activeChatHead, int xVelocity, int yVelocity, Spring activeHorizontalSpring, Spring activeVerticalSpring, boolean wasDragging);
 
-    public abstract void onChatHeadAdded(ChatHead chatHead);
+    public abstract void onChatHeadAdded(ChatHead chatHead, boolean bringToFront);
 
     public abstract void onChatHeadRemoved(ChatHead removed);
 
-    public abstract void selectChatHead(ChatHead chatHead);
-
-    public abstract void bringToFront(ChatHead chatHead);
 
     public abstract Integer getHeroIndex();
 
